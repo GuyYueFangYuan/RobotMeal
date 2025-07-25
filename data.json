@@ -1,0 +1,19 @@
+{
+  "meals": [
+    {
+      "id": 1,
+      "name": "Seafood Fried Rice",
+      "servings": 50
+    },
+    {
+      "id": 2,
+      "name": "Springtime Bacon & Vegie Pasta",
+      "servings": 50
+    }
+  ],
+  "orders": [],
+  "operator": {
+    "username": "Robotarm",
+    "password": "123456789"
+  }
+}
