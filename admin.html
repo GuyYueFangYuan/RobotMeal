@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operator Backstage</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container" id="loginContainer">
+    <h1>Operator Login</h1>
+    <form id="loginForm">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+      <button type="submit">Login</button>
+    </form>
+    <div id="loginMessage"></div>
+  </div>
+  <div class="container" id="adminContainer" style="display:none;">
+    <h1>Operator Backstage</h1>
+    <h2>Orders</h2>
+    <div id="ordersList"></div>
+    <h2>Edit Meals</h2>
+    <button type="button" id="addMealBtn" class="add-meal-btn">+ Add Meal</button>
+    <form id="mealsForm">
+      <table id="mealsTable">
+        <thead>
+          <tr><th>Name</th><th>Servings</th><th>Actions</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button type="submit">Save Changes</button>
+    </form>
+    <div id="mealsMessage"></div>
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </div>
+  <footer class="main-footer">
+    <p class="footer-brand">Powered by Robot Arm Kitchen</p>
+  </footer>
+  <script src="admin.js"></script>
+</body>
+</html> 
