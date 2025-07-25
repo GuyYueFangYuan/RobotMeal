@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Robot Arm Meal Order</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="main-header">
+    <div class="header-icon">🤖🍽️</div>
+    <h1>Cooking Robot</h1>
+    <p class="subtitle">Order your freshly cooked meal, made by our automated cooking robot!</p>
+  </header>
+  <div class="container order-container">
+    <h1>Order Your Meal</h1>
+    <form id="orderForm">
+      <label for="name">Your Name:</label>
+      <input type="text" id="name" name="name" required>
+
+      <div id="mealsSection">
+        <h2>Available Meals</h2>
+        <div id="mealsList"></div>
+      </div>
+
+      <label for="pickupTime">Pickup Time:</label>
+      <input type="datetime-local" id="pickupTime" name="pickupTime" required>
+
+      <button type="submit">Place Order</button>
+    </form>
+    <div id="orderMessage"></div>
+    <hr>
+    <a class="admin-link" href="admin.html">Operator Backstage</a>
+  </div>
+  <footer class="main-footer">
+    <p>Visit this site at <a href="/" target="_blank">http://localhost:3000/</a></p>
+    <p class="footer-brand">Powered by Cooking Robot</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html> 
