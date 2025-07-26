@@ -34,7 +34,14 @@ document.addEventListener('DOMContentLoaded', () => {
     orders.forEach(order => {
       const div = document.createElement('div');
       div.className = 'order-row';
-      div.innerHTML = `<strong>${order.name}</strong> ordered ${order.items.map(i => `${i.servings}x ${i.name || i.id}`).join(', ')}<br>Pickup: ${new Date(order.pickupTime).toLocaleString()}<br><small>Ordered at: ${new Date(order.time).toLocaleString()}</small>`;
+      div.innerHTML = `
+        <div class="order-content">
+          <strong>${order.name}</strong> ordered ${order.items.map(i => `${i.servings}x ${i.name || i.id}`).join(', ')}<br>
+          Pickup: ${new Date(order.pickupTime).toLocaleString()}<br>
+          <small>Ordered at: ${new Date(order.time).toLocaleString()}</small>
+        </div>
+        <button type="button" class="delete-order" data-id="${order.id}">Delete</button>
+      `;
       ordersList.appendChild(div);
     });
   }
@@ -138,6 +145,26 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         mealsMessage.style.color = '#d8000c';
         mealsMessage.textContent = data.error || 'Delete failed.';
+      }
+    }
+  });
+
+  // Delete order functionality
+  ordersList.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('delete-order')) {
+      if (!confirm('Are you sure you want to delete this order?')) {
+        return;
+      }
+      const id = parseInt(e.target.dataset.id);
+      const res = await fetch(`/api/orders/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (res.ok) {
+        fetchOrders(); // Refresh the orders list
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to delete order');
       }
     }
   });
