@@ -307,6 +307,41 @@ footer {
 #mealsTable input[type="number"] {
   margin-right: 0.5em;
 }
+
+/* Order styling */
+.order-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1em;
+  margin-bottom: 1em;
+  transition: box-shadow 0.2s;
+}
+.order-row:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.order-content {
+  flex: 1;
+  margin-right: 1em;
+}
+.delete-order {
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5em 1em;
+  font-size: 0.9em;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.delete-order:hover {
+  background: #c82333;
+}
 @media (max-width: 600px) {
   main {
     padding: 10px 2vw;

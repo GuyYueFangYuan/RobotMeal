@@ -61,8 +61,16 @@ app.post('/api/order', (req, res) => {
     const meal = data.meals.find(m => m.id === item.id);
     meal.servings -= item.servings;
   }
+  // Generate order ID
+  const maxOrderId = data.orders.reduce((max, order) => Math.max(max, order.id || 0), 0);
   // Add order
-  data.orders.push({ name, items, pickupTime, time: new Date().toISOString() });
+  data.orders.push({ 
+    id: maxOrderId + 1, 
+    name, 
+    items, 
+    pickupTime, 
+    time: new Date().toISOString() 
+  });
   writeData(data);
   res.json({ success: true });
 });
@@ -90,6 +98,22 @@ app.get('/api/orders', authMiddleware, (req, res) => {
     items: order.items.map(i => ({ ...i, name: mealsById[i.id] || i.id }))
   }));
   res.json(orders);
+});
+
+// Delete an order (admin only)
+app.delete('/api/orders/:orderId', authMiddleware, (req, res) => {
+  const orderId = parseInt(req.params.orderId);
+  const data = readData();
+  const orderIndex = data.orders.findIndex(order => order.id === orderId);
+  
+  if (orderIndex === -1) {
+    return res.status(404).json({ error: 'Order not found' });
+  }
+  
+  // Remove the order
+  data.orders.splice(orderIndex, 1);
+  writeData(data);
+  res.json({ success: true });
 });
 
 // Edit meals (admin only)
