@@ -6,7 +6,7 @@ const cors = require('cors');
 const crypto = require('crypto');
 
 const app = express();
-const PORT = 3000;
+const PORT = 5001;
 const DATA_FILE = path.join(__dirname, 'data.json');
 
 app.use(cors());
@@ -62,7 +62,7 @@ app.post('/api/order', (req, res) => {
     meal.servings -= item.servings;
   }
   // Generate order ID
-  const maxOrderId = data.orders.reduce((max, order) => Math.max(max, order.id || 0), 0);
+  const maxOrderId = data.orders.length > 0 ? data.orders.reduce((max, order) => Math.max(max, order.id || 0), 0) : 0;
   // Add order
   data.orders.push({ 
     id: maxOrderId + 1, 
@@ -90,14 +90,19 @@ app.post('/api/login', (req, res) => {
 
 // Get all orders (admin only)
 app.get('/api/orders', authMiddleware, (req, res) => {
-  const data = readData();
-  // Attach meal names to each order's items
-  const mealsById = Object.fromEntries(data.meals.map(m => [m.id, m.name]));
-  const orders = data.orders.map(order => ({
-    ...order,
-    items: order.items.map(i => ({ ...i, name: mealsById[i.id] || i.id }))
-  }));
-  res.json(orders);
+  try {
+    const data = readData();
+    // Attach meal names to each order's items
+    const mealsById = Object.fromEntries(data.meals.map(m => [m.id, m.name]));
+    const orders = data.orders.map(order => ({
+      ...order,
+      items: order.items.map(i => ({ ...i, name: mealsById[i.id] || i.id }))
+    }));
+    res.json(orders);
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 // Delete an order (admin only)
