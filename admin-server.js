@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const mealsTableBody = document.querySelector('#mealsTable tbody');
   const mealsMessage = document.getElementById('mealsMessage');
 
+  // Update this to match your server URL
+  const SERVER_URL = 'http://homeye.sdsu.edu:5001';
+
   let token = localStorage.getItem('adminToken') || '';
   let tempMealId = -1;
 
@@ -24,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function fetchOrders() {
     try {
       console.log('Fetching orders...');
-      const res = await fetch('/api/orders', {
+      const res = await fetch(`${SERVER_URL}/api/orders`, {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       console.log('Orders response status:', res.status);
@@ -65,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function fetchMeals() {
     try {
       console.log('Fetching meals...');
-      const res = await fetch('/api/meals', {
+      const res = await fetch(`${SERVER_URL}/api/meals`, {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       console.log('Meals response status:', res.status);
@@ -113,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     try {
       console.log('Attempting login...');
-      const res = await fetch('/api/login', {
+      const res = await fetch(`${SERVER_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -159,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const newMeals = meals.filter(m => m.id < 0 && m.name.trim() !== '');
     meals = meals.filter(m => m.id > 0 || m.id === 0);
     // Send to backend
-    const res = await fetch('/api/meals', {
+    const res = await fetch(`${SERVER_URL}/api/meals`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify({ meals, newMeals })
@@ -178,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
   mealsTableBody.addEventListener('click', async (e) => {
     if (e.target.classList.contains('delete-meal')) {
       const id = parseInt(e.target.dataset.id);
-      const res = await fetch('/api/meals', {
+      const res = await fetch(`${SERVER_URL}/api/meals`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
         body: JSON.stringify({ deleteId: id })
@@ -202,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       const id = parseInt(e.target.dataset.id);
-      const res = await fetch(`/api/orders/${id}`, {
+      const res = await fetch(`${SERVER_URL}/api/orders/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': 'Bearer ' + token }
       });
