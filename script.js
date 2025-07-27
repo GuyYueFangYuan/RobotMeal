@@ -3,8 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const orderForm = document.getElementById('orderForm');
   const orderMessage = document.getElementById('orderMessage');
 
+  // Update this to match your server URL
+  const SERVER_URL = 'http://homeye.sdsu.edu/robotmeal';
+
   // Fetch meals and render
-  fetch('/api/meals')
+  fetch(`${SERVER_URL}/api/meals`)
     .then(res => res.json())
     .then(meals => {
       mealsList.innerHTML = '';
@@ -44,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     // Submit order
-    const res = await fetch('/api/order', {
+    const res = await fetch(`${SERVER_URL}/api/order`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, items, pickupTime })
@@ -55,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
       orderMessage.textContent = 'Order placed successfully!';
       orderForm.reset();
       // Update meal counts
-      fetch('/api/meals')
+      fetch(`${SERVER_URL}/api/meals`)
         .then(res => res.json())
         .then(meals => {
           meals.forEach(meal => {

@@ -92,8 +92,11 @@ app.post('/api/login', (req, res) => {
 app.get('/api/orders', authMiddleware, (req, res) => {
   try {
     const data = readData();
-    // Attach meal names to each order's items
-    const mealsById = Object.fromEntries(data.meals.map(m => [m.id, m.name]));
+      // Attach meal names to each order's items
+  const mealsById = data.meals.reduce((acc, m) => {
+    acc[m.id] = m.name;
+    return acc;
+  }, {});
     const orders = data.orders.map(order => ({
       ...order,
       items: order.items.map(i => ({ ...i, name: mealsById[i.id] || i.id }))
