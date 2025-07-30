@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>API Test Page</h1>
+    <button onclick="testAPI()">Test API</button>
+    <div id="results"></div>
+
+    <script>
+        function testAPI() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<div class="result">Testing API...</div>';
+            
+            console.log('Testing API...');
+            
+            fetch('/api/meals')
+                .then(res => {
+                    console.log('Response:', res.status, res.statusText);
+                    results.innerHTML += `<div class="result">Response: ${res.status} ${res.statusText}</div>`;
+                    
+                    if (!res.ok) {
+                        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('Data:', data);
+                    results.innerHTML += `<div class="result success">Success! Data: ${JSON.stringify(data)}</div>`;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    results.innerHTML += `<div class="result error">Error: ${error.message}</div>`;
+                });
+        }
+        
+        // Auto-test on page load
+        window.onload = testAPI;
+    </script>
+</body>
+</html> 

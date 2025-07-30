@@ -7,8 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const SERVER_URL = '';
 
   // Fetch meals and render
+  console.log('Starting to fetch meals...');
   fetch(`${SERVER_URL}/api/meals`)
     .then(res => {
+      console.log('Response received:', res.status, res.statusText);
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
@@ -31,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .catch(error => {
       console.error('Error loading meals:', error);
-      mealsList.innerHTML = '<p style="color: red;">Error loading meals. Please try refreshing the page.</p>';
+      mealsList.innerHTML = `<p style="color: red;">Error loading meals: ${error.message}</p><p>Please try refreshing the page.</p>`;
     });
 
   orderForm.addEventListener('submit', async (e) => {
