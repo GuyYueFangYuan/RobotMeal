@@ -1,5 +1,5 @@
 let authToken = null;
-const SERVER_URL = 'http://localhost:5001';
+const SERVER_URL = 'http://homeye.sdsu.edu/robotmeal';
 
 // Tab switching
 document.addEventListener('DOMContentLoaded', () => {
