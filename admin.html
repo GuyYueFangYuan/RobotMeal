@@ -18,24 +18,70 @@
     </form>
     <div id="loginMessage"></div>
   </div>
+  
   <div class="container" id="adminContainer" style="display:none;">
     <h1>Operator Backstage</h1>
-    <h2>Orders</h2>
-    <div id="ordersList"></div>
-    <h2>Edit Meals</h2>
-    <button type="button" id="addMealBtn" class="add-meal-btn">+ Add Meal</button>
-    <form id="mealsForm">
-      <table id="mealsTable">
-        <thead>
-          <tr><th>Name</th><th>Servings</th><th>Actions</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <button type="submit">Save Changes</button>
-    </form>
-    <div id="mealsMessage"></div>
+    
+    <!-- Navigation Tabs -->
+    <div class="tab-container">
+      <button class="tab-button active" data-tab="orders">Orders</button>
+      <button class="tab-button" data-tab="meals">Edit Meals</button>
+      <button class="tab-button" data-tab="chef">AutoChef Panel</button>
+    </div>
+    
+    <!-- Orders Tab -->
+    <div id="ordersTab" class="tab-content active">
+      <h2>Orders</h2>
+      <div id="ordersList"></div>
+    </div>
+    
+    <!-- Meals Tab -->
+    <div id="mealsTab" class="tab-content">
+      <h2>Edit Meals</h2>
+      <button type="button" id="addMealBtn" class="add-meal-btn">+ Add Meal</button>
+      <form id="mealsForm">
+        <table id="mealsTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Servings</th>
+              <th>Images</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <button type="submit">Save Changes</button>
+      </form>
+      <div id="mealsMessage"></div>
+    </div>
+    
+    <!-- AutoChef Tab -->
+    <div id="chefTab" class="tab-content">
+      <h2>AutoChef Panel</h2>
+      <div class="chef-stats">
+        <div class="stat-card">
+          <h3>Total Orders</h3>
+          <p id="totalOrders">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Checked Out</h3>
+          <p id="totalCheckedOut">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Pending</h3>
+          <p id="totalPending">0</p>
+        </div>
+      </div>
+      
+      <h3>Pickup Time Statistics</h3>
+      <div id="pickupTimeStats"></div>
+    </div>
+    
     <button id="logoutBtn" class="logout-btn">Logout</button>
   </div>
+  
   <footer class="main-footer">
     <p class="footer-brand">Powered by Robot Arm Kitchen</p>
   </footer>

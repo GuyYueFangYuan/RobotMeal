@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const orderMessage = document.getElementById('orderMessage');
 
   // Update this to match your server URL
-  const SERVER_URL = 'http://homeye.sdsu.edu/robotmeal';
+  const SERVER_URL = 'http://localhost:5001';
 
   // Fetch meals and render
   fetch(`${SERVER_URL}/api/meals`)
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         row.className = 'meal-row';
         row.innerHTML = `
           <label>
-            ${meal.name} (<span id="meal-count-${meal.id}">${meal.servings}</span> left)
+            ${meal.name} - $${meal.price || 0} (<span id="meal-count-${meal.id}">${meal.servings}</span> left)
           </label>
           <input type="number" min="0" max="${meal.servings}" value="0" id="meal-input-${meal.id}" ${meal.servings === 0 ? 'disabled' : ''}>
         `;

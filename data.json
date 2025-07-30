@@ -3,17 +3,26 @@
     {
       "id": 1,
       "name": "Seafood Fried Rice",
-      "servings": 50
+      "servings": 46,
+      "price": 12.99,
+      "images": []
     },
     {
       "id": 2,
       "name": "Springtime Bacon & Vegie Pasta",
-      "servings": 50
+      "servings": 50,
+      "price": 14.99,
+      "images": []
     }
   ],
   "orders": [],
   "operator": {
     "username": "Robotarm",
     "password": "123456789"
+  },
+  "chefStats": {
+    "totalOrders": 0,
+    "totalCheckedOut": 0,
+    "pickupTimeStats": {}
   }
 }

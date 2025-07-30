@@ -4,14 +4,45 @@ const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 const crypto = require('crypto');
+const multer = require('multer');
 
 const app = express();
 const PORT = 5001;
 const DATA_FILE = path.join(__dirname, 'data.json');
+const UPLOADS_DIR = path.join(__dirname, 'uploads');
+
+// Create uploads directory if it doesn't exist
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, UPLOADS_DIR);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: function (req, file, cb) {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(__dirname));
+app.use('/uploads', express.static(UPLOADS_DIR));
 
 // Simple in-memory token store (for demo)
 const adminTokens = new Set();
@@ -34,6 +65,36 @@ function readData() {
 
 function writeData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+}
+
+function updateChefStats(data) {
+  data.chefStats.totalOrders = data.orders.length;
+  data.chefStats.totalCheckedOut = data.orders.filter(order => order.checkedOut).length;
+  
+  // Reset pickup time stats
+  data.chefStats.pickupTimeStats = {};
+  
+  // Group orders by pickup time
+  data.orders.forEach(order => {
+    const pickupTime = order.pickupTime;
+    if (!data.chefStats.pickupTimeStats[pickupTime]) {
+      data.chefStats.pickupTimeStats[pickupTime] = {};
+    }
+    
+    order.items.forEach(item => {
+      if (!data.chefStats.pickupTimeStats[pickupTime][item.id]) {
+        data.chefStats.pickupTimeStats[pickupTime][item.id] = {
+          ordered: 0,
+          cooked: 0,
+          checkedOut: 0
+        };
+      }
+      data.chefStats.pickupTimeStats[pickupTime][item.id].ordered += item.servings;
+      if (order.checkedOut) {
+        data.chefStats.pickupTimeStats[pickupTime][item.id].checkedOut += item.servings;
+      }
+    });
+  });
 }
 
 // Get meals and inventory
@@ -69,8 +130,10 @@ app.post('/api/order', (req, res) => {
     name, 
     items, 
     pickupTime, 
-    time: new Date().toISOString() 
+    time: new Date().toISOString(),
+    checkedOut: false
   });
+  updateChefStats(data);
   writeData(data);
   res.json({ success: true });
 });
@@ -120,6 +183,23 @@ app.delete('/api/orders/:orderId', authMiddleware, (req, res) => {
   
   // Remove the order
   data.orders.splice(orderIndex, 1);
+  updateChefStats(data);
+  writeData(data);
+  res.json({ success: true });
+});
+
+// Checkout an order (admin only)
+app.put('/api/orders/:orderId/checkout', authMiddleware, (req, res) => {
+  const orderId = parseInt(req.params.orderId);
+  const data = readData();
+  const order = data.orders.find(order => order.id === orderId);
+  
+  if (!order) {
+    return res.status(404).json({ error: 'Order not found' });
+  }
+  
+  order.checkedOut = true;
+  updateChefStats(data);
   writeData(data);
   res.json({ success: true });
 });
@@ -143,6 +223,7 @@ app.put('/api/meals', authMiddleware, (req, res) => {
     if (m) {
       m.name = meal.name;
       m.servings = meal.servings;
+      m.price = meal.price || 0;
     }
   }
   // Add new meals
@@ -151,9 +232,64 @@ app.put('/api/meals', authMiddleware, (req, res) => {
     for (const meal of newMeals) {
       if (!meal.name || typeof meal.servings !== 'number') continue;
       maxId++;
-      data.meals.push({ id: maxId, name: meal.name, servings: meal.servings });
+      data.meals.push({ 
+        id: maxId, 
+        name: meal.name, 
+        servings: meal.servings,
+        price: meal.price || 0,
+        images: meal.images || []
+      });
     }
   }
+  writeData(data);
+  res.json({ success: true });
+});
+
+// Upload meal images (admin only)
+app.post('/api/meals/:mealId/images', authMiddleware, upload.array('images', 3), (req, res) => {
+  const mealId = parseInt(req.params.mealId);
+  const data = readData();
+  const meal = data.meals.find(m => m.id === mealId);
+  
+  if (!meal) {
+    return res.status(404).json({ error: 'Meal not found' });
+  }
+  
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ error: 'No images uploaded' });
+  }
+  
+  const uploadedImages = req.files.map(file => `/uploads/${file.filename}`);
+  meal.images = uploadedImages;
+  writeData(data);
+  res.json({ success: true, images: uploadedImages });
+});
+
+// Get chef statistics (admin only)
+app.get('/api/chef-stats', authMiddleware, (req, res) => {
+  const data = readData();
+  updateChefStats(data);
+  writeData(data);
+  res.json(data.chefStats);
+});
+
+// Update cooked count for a meal at a pickup time (admin only)
+app.put('/api/chef-stats/cooked', authMiddleware, (req, res) => {
+  const { pickupTime, mealId } = req.body;
+  const data = readData();
+  
+  if (!data.chefStats.pickupTimeStats[pickupTime]) {
+    data.chefStats.pickupTimeStats[pickupTime] = {};
+  }
+  if (!data.chefStats.pickupTimeStats[pickupTime][mealId]) {
+    data.chefStats.pickupTimeStats[pickupTime][mealId] = {
+      ordered: 0,
+      cooked: 0,
+      checkedOut: 0
+    };
+  }
+  
+  data.chefStats.pickupTimeStats[pickupTime][mealId].cooked += 1;
   writeData(data);
   res.json({ success: true });
 });
