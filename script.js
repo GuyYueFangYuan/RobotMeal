@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const orderForm = document.getElementById('orderForm');
   const orderMessage = document.getElementById('orderMessage');
 
-  // Use relative URL for production compatibility
-  const SERVER_URL = '';
+  // Use full URL since relative URLs don't work on this server
+  const SERVER_URL = 'http://homeye.sdsu.edu/robotmeal';
 
   // Fetch meals and render
   console.log('Starting to fetch meals...');
