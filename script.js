@@ -3,13 +3,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const orderForm = document.getElementById('orderForm');
   const orderMessage = document.getElementById('orderMessage');
 
-  // Update this to match your server URL
-  const SERVER_URL = 'http://localhost:5001';
+  // Use relative URL for production compatibility
+  const SERVER_URL = '';
 
   // Fetch meals and render
   fetch(`${SERVER_URL}/api/meals`)
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
     .then(meals => {
+      console.log('Meals loaded:', meals);
       mealsList.innerHTML = '';
       meals.forEach(meal => {
         const row = document.createElement('div');
@@ -22,6 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         mealsList.appendChild(row);
       });
+    })
+    .catch(error => {
+      console.error('Error loading meals:', error);
+      mealsList.innerHTML = '<p style="color: red;">Error loading meals. Please try refreshing the page.</p>';
     });
 
   orderForm.addEventListener('submit', async (e) => {

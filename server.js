@@ -39,7 +39,12 @@ const upload = multer({
   }
 });
 
-app.use(cors());
+app.use(cors({
+  origin: true, // Allow all origins for now
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
 app.use(bodyParser.json());
 
 // Add aggressive cache-busting headers to prevent old versions from being cached
@@ -111,7 +116,9 @@ function updateChefStats(data) {
 
 // Get meals and inventory
 app.get('/api/meals', (req, res) => {
+  console.log('API /api/meals called');
   const data = readData();
+  console.log('Sending meals:', data.meals);
   res.json(data.meals);
 });
 
