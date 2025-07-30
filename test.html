@@ -7,42 +7,57 @@
         .result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
         .success { background-color: #d4edda; border-color: #c3e6cb; }
         .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
     </style>
 </head>
 <body>
     <h1>API Test Page</h1>
-    <button onclick="testAPI()">Test API</button>
+    <button onclick="testAll()">Test All Methods</button>
     <div id="results"></div>
 
     <script>
-        function testAPI() {
+        function addResult(message, type = 'info') {
             const results = document.getElementById('results');
-            results.innerHTML = '<div class="result">Testing API...</div>';
+            results.innerHTML += `<div class="result ${type}">${message}</div>`;
+        }
+
+        function testAll() {
+            const results = document.getElementById('results');
+            results.innerHTML = '';
             
-            console.log('Testing API...');
+            addResult('Starting comprehensive API tests...', 'info');
             
-            fetch('/api/meals')
+            // Test 1: Relative URL
+            testFetch('/api/meals', 'Relative URL');
+            
+            // Test 2: Full URL
+            testFetch('http://homeye.sdsu.edu/robotmeal/api/meals', 'Full HTTP URL');
+            
+            // Test 3: HTTPS URL
+            testFetch('https://homeye.sdsu.edu/robotmeal/api/meals', 'Full HTTPS URL');
+            
+            // Test 4: Direct port
+            testFetch('http://homeye.sdsu.edu:5001/api/meals', 'Direct Port 5001');
+        }
+
+        function testFetch(url, description) {
+            addResult(`Testing: ${description} (${url})`, 'info');
+            
+            fetch(url)
                 .then(res => {
-                    console.log('Response:', res.status, res.statusText);
-                    results.innerHTML += `<div class="result">Response: ${res.status} ${res.statusText}</div>`;
-                    
-                    if (!res.ok) {
-                        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-                    }
+                    addResult(`✅ ${description}: Response ${res.status} ${res.statusText}`, 'success');
                     return res.json();
                 })
                 .then(data => {
-                    console.log('Data:', data);
-                    results.innerHTML += `<div class="result success">Success! Data: ${JSON.stringify(data)}</div>`;
+                    addResult(`✅ ${description}: Data received (${data.length} meals)`, 'success');
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    results.innerHTML += `<div class="result error">Error: ${error.message}</div>`;
+                    addResult(`❌ ${description}: ${error.message}`, 'error');
                 });
         }
         
         // Auto-test on page load
-        window.onload = testAPI;
+        window.onload = testAll;
     </script>
 </body>
 </html> 
