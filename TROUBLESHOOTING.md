@@ -5,7 +5,7 @@
 ### Step 1: Check if the server is running
 1. Open terminal/command prompt in your project directory
 2. Run: `npm start`
-3. You should see: "Server running on http://localhost:3000"
+3. You should see: "Server running on http://localhost:5001"
 
 ### Step 2: Test server endpoints
 1. Install dependencies: `npm install`
@@ -63,7 +63,7 @@ Make sure all files have proper read/write permissions:
 - Default credentials: username="Robotarm", password="123456789"
 
 ### Step 7: Manual testing
-1. Open your browser to: http://localhost:3000/admin.html
+1. Open your browser to: http://localhost:5001/admin.html
 2. Try logging in with: Robotarm / 123456789
 3. Check the browser console for debug messages
 4. If successful, you should see the admin interface with orders and meals sections

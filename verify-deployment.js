@@ -86,5 +86,5 @@ if (fs.existsSync('data.json')) {
 console.log('\n🚀 Next steps:');
 console.log('1. Run: npm install');
 console.log('2. Run: npm start');
-console.log('3. Open: http://localhost:3000/admin.html');
+console.log('3. Open: http://localhost:5001/admin.html');
 console.log('4. Login with: Robotarm / 123456789'); 

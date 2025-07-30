@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
 async function testServer() {
-  const baseUrl = 'http://localhost:3000';
+  const baseUrl = 'http://localhost:5001';
   
   console.log('Testing server endpoints...\n');
   

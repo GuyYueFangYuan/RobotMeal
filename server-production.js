@@ -7,7 +7,9 @@ const crypto = require('crypto');
 const multer = require('multer');
 
 const app = express();
-const PORT = 5001;
+
+// Production configuration
+const PORT = process.env.PORT || 80; // Use port 80 for production or environment variable
 const DATA_FILE = path.join(__dirname, 'data.json');
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
 
@@ -39,20 +41,13 @@ const upload = multer({
   }
 });
 
-app.use(cors());
+// Production CORS settings
+app.use(cors({
+  origin: ['https://homeye.sdsu.edu', 'http://homeye.sdsu.edu'],
+  credentials: true
+}));
+
 app.use(bodyParser.json());
-
-// Add aggressive cache-busting headers to prevent old versions from being cached
-app.use((req, res, next) => {
-  res.set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
-  res.set('Pragma', 'no-cache');
-  res.set('Expires', '0');
-  res.set('Surrogate-Control', 'no-store');
-  res.set('Last-Modified', new Date().toUTCString());
-  res.set('ETag', `"${Date.now()}"`);
-  next();
-});
-
 app.use(express.static(__dirname));
 app.use('/uploads', express.static(UPLOADS_DIR));
 
@@ -167,11 +162,11 @@ app.post('/api/login', (req, res) => {
 app.get('/api/orders', authMiddleware, (req, res) => {
   try {
     const data = readData();
-      // Attach meal names to each order's items
-  const mealsById = data.meals.reduce((acc, m) => {
-    acc[m.id] = m.name;
-    return acc;
-  }, {});
+    // Attach meal names to each order's items
+    const mealsById = data.meals.reduce((acc, m) => {
+      acc[m.id] = m.name;
+      return acc;
+    }, {});
     const orders = data.orders.map(order => ({
       ...order,
       items: order.items.map(i => ({ ...i, name: mealsById[i.id] || i.id }))
@@ -306,6 +301,14 @@ app.put('/api/chef-stats/cooked', authMiddleware, (req, res) => {
   res.json({ success: true });
 });
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`🚀 RobotMeal server running on port ${PORT}`);
+  console.log(`🌐 Production mode: ${process.env.NODE_ENV === 'production' ? 'Yes' : 'No'}`);
+  console.log(`📁 Data file: ${DATA_FILE}`);
+  console.log(`📁 Uploads directory: ${UPLOADS_DIR}`);
 }); 
